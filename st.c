@@ -726,7 +726,7 @@ execsh(void)
 void
 sigchld(int a)
 {
-	int stat;
+	int stat, code;
 	pid_t p;
 
 	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
@@ -735,9 +735,13 @@ sigchld(int a)
 	if (pid != p)
 		return;
 
-	if (!WIFEXITED(stat) || WEXITSTATUS(stat))
-		die("child finished with error '%d'\n", stat);
-	exit(0);
+	if (WIFEXITED(stat)) {
+		code = WEXITSTATUS(stat);
+	} else {
+		code = 127;
+	}
+
+	exit(code);
 }
 
 
