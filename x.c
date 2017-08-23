@@ -1339,11 +1339,15 @@ xdrawcursor(void)
 			utf8decode("☃", &g.u, UTF_SIZ);
 		case 0: /* Blinking Block */
 		case 1: /* Blinking Block (Default) */
+			if (term.mode & MODE_BLINK)
+				break;
 		case 2: /* Steady Block */
 			g.mode |= term.line[term.c.y][curx].mode & ATTR_WIDE;
 			xdrawglyph(g, term.c.x, term.c.y);
 			break;
 		case 3: /* Blinking Underline */
+			if (term.mode & MODE_BLINK)
+				break;
 		case 4: /* Steady Underline */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + curx * win.cw,
@@ -1352,6 +1356,8 @@ xdrawcursor(void)
 					win.cw, cursorthickness);
 			break;
 		case 5: /* Blinking bar */
+			if (term.mode & MODE_BLINK)
+				break;
 		case 6: /* Steady bar */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + curx * win.cw,
@@ -1653,7 +1659,11 @@ run(void)
 		if (FD_ISSET(cmdfd, &rfd)) {
 			ttyread();
 			if (blinktimeout) {
-				blinkset = tattrset(ATTR_BLINK);
+				blinkset = (win.cursor == 0) || \
+					   (win.cursor == 1) || \
+					   (win.cursor == 3) || \
+					   (win.cursor == 5) || \
+					   tattrset(ATTR_BLINK);
 				if (!blinkset)
 					MODBIT(term.mode, 0, MODE_BLINK);
 			}
