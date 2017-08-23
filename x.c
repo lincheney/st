@@ -158,6 +158,8 @@ typedef struct {
 static Fontcache frc[16];
 static int frclen = 0;
 
+static struct timespec lastkeypress = {};
+
 void
 getbuttoninfo(XEvent *e)
 {
@@ -1334,20 +1336,27 @@ xdrawcursor(void)
 
 	/* draw the new one */
 	if (win.state & WIN_FOCUSED) {
+		struct timespec now;
+		switch (win.cursor) {
+		case 0:
+		case 1:
+		case 3:
+		case 5:
+		    clock_gettime(CLOCK_MONOTONIC, &now);
+		    if (term.mode & MODE_BLINK && TIMEDIFF(now, lastkeypress) > blinktimeout)
+			break;
+		default:
+
 		switch (win.cursor) {
 		case 7: /* st extension: snowman */
 			utf8decode("☃", &g.u, UTF_SIZ);
 		case 0: /* Blinking Block */
 		case 1: /* Blinking Block (Default) */
-			if (term.mode & MODE_BLINK)
-				break;
 		case 2: /* Steady Block */
 			g.mode |= term.line[term.c.y][curx].mode & ATTR_WIDE;
 			xdrawglyph(g, term.c.x, term.c.y);
 			break;
 		case 3: /* Blinking Underline */
-			if (term.mode & MODE_BLINK)
-				break;
 		case 4: /* Steady Underline */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + curx * win.cw,
@@ -1356,14 +1365,13 @@ xdrawcursor(void)
 					win.cw, cursorthickness);
 			break;
 		case 5: /* Blinking bar */
-			if (term.mode & MODE_BLINK)
-				break;
 		case 6: /* Steady bar */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + curx * win.cw,
 					borderpx + term.c.y * win.ch,
 					cursorthickness, win.ch);
 			break;
+		}
 		}
 	} else {
 		XftDrawRect(xw.draw, &drawcol,
@@ -1556,6 +1564,8 @@ kpress(XEvent *ev)
 			return;
 		}
 	}
+
+	clock_gettime(CLOCK_MONOTONIC, &lastkeypress);
 
 	/* 2. custom keys from config.h */
 	if ((customkey = kmap(ksym, e->state))) {
