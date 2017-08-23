@@ -218,6 +218,8 @@ char *opt_line  = NULL;
 char *opt_name  = NULL;
 char *opt_title = NULL;
 int oldbutton   = 3; /* button event on startup: 3 = release */
+int stdout_fd;
+int stdin_fd;
 
 static CSIEscape csiescseq;
 static STREscape strescseq;
@@ -670,6 +672,7 @@ void
 execsh(void)
 {
 	char **args, *sh, *prog;
+	char buffer[8];
 	const struct passwd *pw;
 
 	errno = 0;
@@ -699,6 +702,12 @@ execsh(void)
 	setenv("SHELL", sh, 1);
 	setenv("HOME", pw->pw_dir, 1);
 	setenv("TERM", termname, 1);
+
+	snprintf(buffer, sizeof(buffer), "%i", stdin_fd);
+	setenv(ENV_PREFIX "STDIN_FD", buffer, 1);
+	snprintf(buffer, sizeof(buffer), "%i", stdout_fd);
+	setenv(ENV_PREFIX "STDOUT_FD", buffer, 1);
+
 	xsetenv();
 
 	signal(SIGCHLD, SIG_DFL);
@@ -777,6 +786,11 @@ ttynew(void)
 		stty();
 		return;
 	}
+
+	if ((stdin_fd = dup(0)) == -1)
+		die("failed to dup stdin: %s\n", strerror(errno));
+	if ((stdout_fd = dup(1)) == -1)
+		die("failed to dup stdout: %s\n", strerror(errno));
 
 	/* seems to work fine on linux, openbsd and freebsd */
 	if (openpty(&m, &s, NULL, NULL, &w) < 0)
