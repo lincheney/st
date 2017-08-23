@@ -873,6 +873,7 @@ xinit(void)
 	XGCValues gcvalues;
 	Cursor cursor;
 	Window parent;
+	int border_width = 0;
 	pid_t thispid = getpid();
 	XColor xmousefg, xmousebg;
 
@@ -909,10 +910,15 @@ xinit(void)
 		| ButtonMotionMask | ButtonPressMask | ButtonReleaseMask;
 	xw.attrs.colormap = xw.cmap;
 
+	if (! opt_decorated) {
+	    xw.attrs.border_pixel = 0x7f7f7f;
+	    border_width = 1;
+	}
+
 	if (!(opt_embed && (parent = strtol(opt_embed, NULL, 0))))
 		parent = XRootWindow(xw.dpy, xw.scr);
 	xw.win = XCreateWindow(xw.dpy, parent, xw.l, xw.t,
-			win.w, win.h, 0, XDefaultDepth(xw.dpy, xw.scr), InputOutput,
+			win.w, win.h, border_width, XDefaultDepth(xw.dpy, xw.scr), InputOutput,
 			xw.vis, CWBackPixel | CWBorderPixel | CWBitGravity
 			| CWEventMask | CWColormap, &xw.attrs);
 
@@ -972,6 +978,18 @@ xinit(void)
 	xw.netwmpid = XInternAtom(xw.dpy, "_NET_WM_PID", False);
 	XChangeProperty(xw.dpy, xw.win, xw.netwmpid, XA_CARDINAL, 32,
 			PropModeReplace, (uchar *)&thispid, 1);
+
+	if (opt_dialog) {
+	    Atom prop = XInternAtom(xw.dpy, "_NET_WM_WINDOW_TYPE", False);
+	    Atom value = XInternAtom(xw.dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+	    XChangeProperty(xw.dpy, xw.win, prop, XA_ATOM, 32, PropModeReplace, (uchar*)&value, 1);
+	}
+
+	if (! opt_decorated) {
+	    int hints[] = {0x2, 0, 0, 0, 0};
+	    Atom prop = XInternAtom(xw.dpy, "_MOTIF_WM_HINTS", False);
+	    XChangeProperty(xw.dpy, xw.win, prop, prop, 32, PropModeReplace, (uchar*)hints, 5);
+	}
 
 	resettitle();
 	XMapWindow(xw.dpy, xw.win);
@@ -1701,6 +1719,7 @@ run(void)
 int
 main(int argc, char *argv[])
 {
+	char* envvar;
 	xw.l = xw.t = 0;
 	xw.isfixed = False;
 	win.cursor = cursorshape;
@@ -1750,6 +1769,11 @@ main(int argc, char *argv[])
 	} ARGEND;
 
 run:
+	envvar = GET_ENV("DIALOG");
+	opt_dialog = envvar && strncmp(envvar, "0", 1) != 0;
+	envvar = GET_ENV("DECORATED");
+	opt_decorated = !envvar || strncmp(envvar, "0", 1) == 0;
+
 	if (argc > 0) {
 		/* eat all remaining arguments */
 		opt_cmd = argv;

@@ -6,7 +6,7 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 char font[] = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
-int borderpx = 2;
+int borderpx = 0;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -40,6 +40,10 @@ unsigned int tripleclicktimeout = 600;
 
 /* alt screens */
 int allowaltscreen = 1;
+
+/* dialog */
+int opt_dialog = 0;
+int opt_decorated = 1;
 
 /* frames per second st should at maximum draw to the screen */
 unsigned int xfps = 120;

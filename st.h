@@ -20,6 +20,8 @@
 #define TRUECOLOR(r,g,b)	(1 << 24 | (r) << 16 | (g) << 8 | (b))
 #define IS_TRUECOL(x)		(1 << 24 & (x))
 
+#define GET_ENV(x)		(getenv("ST_" x))
+
 enum glyph_attribute {
 	ATTR_NULL       = 0,
 	ATTR_BOLD       = 1 << 0,
@@ -244,6 +246,8 @@ extern float chscale;
 extern unsigned int doubleclicktimeout;
 extern unsigned int tripleclicktimeout;
 extern int allowaltscreen;
+extern int opt_dialog;
+extern int opt_decorated;
 extern unsigned int xfps;
 extern unsigned int actionfps;
 extern unsigned int cursorthickness;
