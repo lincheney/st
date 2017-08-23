@@ -703,10 +703,12 @@ execsh(void)
 	setenv("HOME", pw->pw_dir, 1);
 	setenv("TERM", termname, 1);
 
-	snprintf(buffer, sizeof(buffer), "%i", stdin_fd);
-	setenv(ENV_PREFIX "STDIN_FD", buffer, 1);
-	snprintf(buffer, sizeof(buffer), "%i", stdout_fd);
-	setenv(ENV_PREFIX "STDOUT_FD", buffer, 1);
+	if (! opt_reset_fd) {
+		snprintf(buffer, sizeof(buffer), "%i", stdin_fd);
+		setenv(ENV_PREFIX "STDIN_FD", buffer, 1);
+		snprintf(buffer, sizeof(buffer), "%i", stdout_fd);
+		setenv(ENV_PREFIX "STDOUT_FD", buffer, 1);
+	}
 
 	xsetenv();
 
@@ -803,8 +805,15 @@ ttynew(void)
 	case 0:
 		close(iofd);
 		setsid(); /* create a new process group */
-		dup2(s, 0);
-		dup2(s, 1);
+
+		if (opt_reset_fd) {
+			dup2(stdin_fd, 0);
+			dup2(stdout_fd, 1);
+		} else {
+			dup2(s, 0);
+			dup2(s, 1);
+		}
+
 		dup2(s, 2);
 		if (ioctl(s, TIOCSCTTY, NULL) < 0)
 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));

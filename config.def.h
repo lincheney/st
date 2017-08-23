@@ -44,6 +44,7 @@ int allowaltscreen = 1;
 /* dialog */
 int opt_dialog = 0;
 int opt_decorated = 1;
+int opt_reset_fd = 0;
 
 /* frames per second st should at maximum draw to the screen */
 unsigned int xfps = 120;

@@ -249,6 +249,7 @@ extern unsigned int tripleclicktimeout;
 extern int allowaltscreen;
 extern int opt_dialog;
 extern int opt_decorated;
+extern int opt_reset_fd;
 extern unsigned int xfps;
 extern unsigned int actionfps;
 extern unsigned int cursorthickness;

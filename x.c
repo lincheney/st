@@ -1770,9 +1770,11 @@ main(int argc, char *argv[])
 
 run:
 	envvar = GET_ENV("DIALOG");
-	opt_dialog = envvar && strncmp(envvar, "0", 1) != 0;
+	opt_dialog = envvar && strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("DECORATED");
-	opt_decorated = !envvar || strncmp(envvar, "0", 1) == 0;
+	opt_decorated = !envvar || strncmp(envvar, "1", 1) != 0;
+	envvar = GET_ENV("RESET_FD");
+	opt_reset_fd = envvar && strncmp(envvar, "1", 1) == 0;
 
 	if (argc > 0) {
 		/* eat all remaining arguments */
