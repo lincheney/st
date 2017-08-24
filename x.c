@@ -1343,7 +1343,7 @@ xdrawcursor(void)
 		case 3:
 		case 5:
 		    clock_gettime(CLOCK_MONOTONIC, &now);
-		    if (term.mode & MODE_BLINK && TIMEDIFF(now, lastkeypress) > blinktimeout)
+		    if (term.mode & MODE_BLINK && TIMEDIFF(now, lastkeypress) > blinktimeout/10)
 			break;
 		default:
 
