@@ -1792,7 +1792,7 @@ run:
 	envvar = GET_ENV("DIALOG");
 	opt_dialog = envvar && strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("DECORATED");
-	opt_decorated = !envvar || strncmp(envvar, "1", 1) != 0;
+	opt_decorated = !envvar || strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("RESET_FD");
 	opt_reset_fd = envvar && strncmp(envvar, "1", 1) == 0;
 
