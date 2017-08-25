@@ -218,8 +218,9 @@ char *opt_line  = NULL;
 char *opt_name  = NULL;
 char *opt_title = NULL;
 int oldbutton   = 3; /* button event on startup: 3 = release */
-int stdout_fd;
 int stdin_fd;
+int stdout_fd;
+FILE* stderr_file = NULL;
 
 static CSIEscape csiescseq;
 static STREscape strescseq;
@@ -663,7 +664,7 @@ die(const char *errstr, ...)
 	va_list ap;
 
 	va_start(ap, errstr);
-	vfprintf(stderr, errstr, ap);
+	vfprintf(stderr_file ? stderr_file : stderr, errstr, ap);
 	va_end(ap);
 	exit(1);
 }
@@ -719,7 +720,8 @@ execsh(void)
 	signal(SIGTERM, SIG_DFL);
 	signal(SIGALRM, SIG_DFL);
 
-	execvp(prog, args);
+	if (execvp(prog, args) < 0)
+		die("Failed to execute %s: %s\n", prog, strerror(errno));
 	_exit(1);
 }
 
@@ -772,7 +774,7 @@ stty(void)
 void
 ttynew(void)
 {
-	int m, s;
+	int m, s, stderr_fd;
 	struct winsize w = {term.row, term.col, 0, 0};
 
 	if (opt_io) {
@@ -797,6 +799,8 @@ ttynew(void)
 		die("failed to dup stdin: %s\n", strerror(errno));
 	if ((stdout_fd = dup(1)) == -1)
 		die("failed to dup stdout: %s\n", strerror(errno));
+	if ((stderr_fd = dup(1)) == -1)
+		die("failed to dup stdout: %s\n", strerror(errno));
 
 	/* seems to work fine on linux, openbsd and freebsd */
 	if (openpty(&m, &s, NULL, NULL, &w) < 0)
@@ -809,6 +813,7 @@ ttynew(void)
 	case 0:
 		close(iofd);
 		setsid(); /* create a new process group */
+		stderr_file = fdopen(stderr_fd, "w");
 
 		if (opt_reset_fd) {
 			dup2(stdin_fd, 0);
