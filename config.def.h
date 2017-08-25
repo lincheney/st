@@ -41,8 +41,8 @@ unsigned int tripleclicktimeout = 600;
 /* alt screens */
 int allowaltscreen = 1;
 
-/* dialog */
-int opt_dialog = 0;
+/* some options */
+char* opt_window_type = NULL;
 int opt_decorated = 1;
 int opt_reset_fd = 0;
 

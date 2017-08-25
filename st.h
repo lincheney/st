@@ -247,7 +247,7 @@ extern float chscale;
 extern unsigned int doubleclicktimeout;
 extern unsigned int tripleclicktimeout;
 extern int allowaltscreen;
-extern int opt_dialog;
+extern char* opt_window_type;
 extern int opt_decorated;
 extern int opt_reset_fd;
 extern unsigned int xfps;

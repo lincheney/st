@@ -981,9 +981,9 @@ xinit(void)
 	XChangeProperty(xw.dpy, xw.win, xw.netwmpid, XA_CARDINAL, 32,
 			PropModeReplace, (uchar *)&thispid, 1);
 
-	if (opt_dialog) {
+	if (opt_window_type) {
 	    Atom prop = XInternAtom(xw.dpy, "_NET_WM_WINDOW_TYPE", False);
-	    Atom value = XInternAtom(xw.dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+	    Atom value = XInternAtom(xw.dpy, opt_window_type, False);
 	    XChangeProperty(xw.dpy, xw.win, prop, XA_ATOM, 32, PropModeReplace, (uchar*)&value, 1);
 	}
 
@@ -1789,8 +1789,7 @@ main(int argc, char *argv[])
 	} ARGEND;
 
 run:
-	envvar = GET_ENV("DIALOG");
-	opt_dialog = envvar && strncmp(envvar, "1", 1) == 0;
+	opt_window_type = GET_ENV("WINDOW_TYPE");
 	envvar = GET_ENV("DECORATED");
 	opt_decorated = !envvar || strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("RESET_FD");
