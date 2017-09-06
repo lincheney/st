@@ -1794,6 +1794,8 @@ run:
 	opt_decorated = !envvar || strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("RESET_FD");
 	opt_reset_fd = envvar && strncmp(envvar, "1", 1) == 0;
+	envvar = GET_ENV("FONT");
+	opt_font = opt_font ? opt_font : envvar;
 
 	if (argc > 0) {
 		/* eat all remaining arguments */
