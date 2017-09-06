@@ -52,4 +52,8 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/st
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/st.1
 
+release: CFLAGS := -O3 -flto $(WFLAGS) -DNDEBUG -g
+release: LDFLAGS := -O3 -flto $(WFLAGS) -DNDEBUG -g
+release: all
+
 .PHONY: all options clean dist install uninstall
