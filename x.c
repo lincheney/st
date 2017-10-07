@@ -1740,6 +1740,7 @@ int
 main(int argc, char *argv[])
 {
 	char* envvar;
+	unsigned int tmp;
 	xw.l = xw.t = 0;
 	xw.isfixed = False;
 	win.cursor = cursorshape;
@@ -1796,6 +1797,12 @@ run:
 	opt_reset_fd = envvar && strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("FONT");
 	opt_font = opt_font ? opt_font : envvar;
+	envvar = GET_ENV("BG");
+	tmp = envvar ? strtoul(envvar, NULL, 10) : 0;
+	defaultbg = tmp ? tmp : defaultbg;
+	envvar = GET_ENV("FG");
+	tmp = envvar ? strtoul(envvar, NULL, 10) : 0;
+	defaultfg = tmp ? tmp : defaultfg;
 
 	if (argc > 0) {
 		/* eat all remaining arguments */
