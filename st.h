@@ -233,6 +233,7 @@ extern char *opt_io;
 extern char *opt_line;
 extern char *opt_name;
 extern char *opt_title;
+extern int opt_exit_on_unfocus;
 extern int oldbutton;
 
 extern char *usedfont;

@@ -217,6 +217,7 @@ char *opt_io    = NULL;
 char *opt_line  = NULL;
 char *opt_name  = NULL;
 char *opt_title = NULL;
+int opt_exit_on_unfocus = 0;
 int oldbutton   = 3; /* button event on startup: 3 = release */
 int stdin_fd;
 int stdout_fd;

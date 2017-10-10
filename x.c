@@ -1534,6 +1534,8 @@ focus(XEvent *ev)
 		xseturgency(0);
 		if (IS_SET(MODE_FOCUS))
 			ttywrite("\033[I", 3);
+	} else if (opt_exit_on_unfocus) {
+		exit(0);
 	} else {
 		XUnsetICFocus(xw.xic);
 		win.state &= ~WIN_FOCUSED;
@@ -1797,6 +1799,8 @@ run:
 	opt_reset_fd = envvar && strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("FONT");
 	opt_font = opt_font ? opt_font : envvar;
+	envvar = GET_ENV("EXIT_ON_UNFOCUS");
+	opt_exit_on_unfocus = envvar && strncmp(envvar, "1", 1) == 0;
 	envvar = GET_ENV("BG");
 	tmp = envvar ? strtoul(envvar, NULL, 10) : 0;
 	defaultbg = tmp ? tmp : defaultbg;
