@@ -50,6 +50,7 @@ typedef struct {
 	int scr;
 	int isfixed; /* is fixed geometry? */
 	int l, t; /* left and top offset */
+	int w, h;
 	int gm; /* geometry mask */
 } XWindow;
 
@@ -896,8 +897,8 @@ xinit(void)
 	xloadcols();
 
 	/* adjust fixed window geometry */
-	win.w = 2 * borderpx + term.col * win.cw;
-	win.h = 2 * borderpx + term.row * win.ch;
+	win.w = 2 * borderpx + (xw.w ? xw.w : term.col * win.cw);
+	win.h = 2 * borderpx + (xw.h ? xw.h : term.row * win.ch);
 	if (xw.gm & XNegative)
 		xw.l += DisplayWidth(xw.dpy, xw.scr) - win.w - 2;
 	if (xw.gm & YNegative)
@@ -1754,6 +1755,10 @@ main(int argc, char *argv[])
 	case 'c':
 		opt_class = EARGF(usage());
 		break;
+	case 'd':
+		tmp = sscanf(EARGF(usage()), "%ix%i", &cols, &rows);
+		if (tmp < 2) { usage(); abort(); }
+		break;
 	case 'e':
 		if (argc > 0)
 			--argc, ++argv;
@@ -1763,7 +1768,7 @@ main(int argc, char *argv[])
 		break;
 	case 'g':
 		xw.gm = XParseGeometry(EARGF(usage()),
-				&xw.l, &xw.t, &cols, &rows);
+				&xw.l, &xw.t, &xw.w, &xw.h);
 		break;
 	case 'i':
 		xw.isfixed = 1;
