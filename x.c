@@ -1757,7 +1757,6 @@ main(int argc, char *argv[])
 		break;
 	case 'd':
 		tmp = sscanf(EARGF(usage()), "%ix%i", &cols, &rows);
-		if (tmp < 2) { usage(); abort(); }
 		break;
 	case 'e':
 		if (argc > 0)
